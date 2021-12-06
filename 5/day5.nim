@@ -74,8 +74,6 @@ proc hash(c: Coord): Hash =
 
 
 iterator coords(v: Vent, withDiagonals: bool): Coord =
-    ## Yield the point of a line. If "withDiagonals" is false,
-    ## diagonal lines are ignored.
     let xInc = cmp(v.x2, v.x1)
     let yInc = cmp(v.y2, v.y1)
     if withDiagonals or xInc == 0 or yInc == 0:
@@ -86,8 +84,6 @@ iterator coords(v: Vent, withDiagonals: bool): Coord =
             inc x, xInc
             inc y, yInc
             yield Coord(x:x, y:y)
-    else:
-        discard
 
 
 func toVent(l: string): Vent =
@@ -99,8 +95,6 @@ func toVent(l: string): Vent =
 
 proc parseInput(file="input.txt"): seq[Vent] =
     return file.readFile().strip().splitLines.map(toVent)
-
-
 
 
 proc main(input: seq[Vent], withDiagonals=false): int =
@@ -115,8 +109,11 @@ proc main(input: seq[Vent], withDiagonals=false): int =
             count += 1
     return count
 
+
 let input = parseInput()
 echo main(input)
+
+
 #[ --- Part Two ---
 #
 # Unfortunately, considering only horizontal and vertical lines doesn't give
