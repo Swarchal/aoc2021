@@ -103,11 +103,9 @@ proc main(input: seq[Vent], withDiagonals=false): int =
         for coord in vent.coords(withDiagonals):
             container.add(coord)
     let overlaps = container.toCountTable()
-    var count = 0
     for i in overlaps.values:
         if i >= 2:
-            count += 1
-    return count
+            result += 1
 
 
 let input = parseInput()
