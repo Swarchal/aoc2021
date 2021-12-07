@@ -49,25 +49,25 @@
 # Determine the horizontal position that the crabs can align to using the least
 # fuel possible. How much fuel must they spend to align to that position?
 ]#
-import std/[strutils, sequtils, algorithm]
+import std/[strutils, sequtils, algorithm, math]
 
 
 proc parseInput(file="input.txt"): seq[int] =
-    return file.readFile.strip.split(",").map(parseInt)
+  return file.readFile.strip.split(",").map(parseInt)
 
 
 func median(x: seq[int]): int =
-    var values = x
-    sort(values)
-    let middle = int(len(values) / 2)
-    return values[middle]
+  var values = x
+  sort(values)
+  let middle = int(len(values) / 2)
+  return values[middle]
 
 
 func cost(x: seq[int], median:int): int =
-    var cost = 0
-    for i in x:
-        cost += abs(i - median)
-    return cost
+  var cost = 0
+  for i in x:
+      cost += abs(i - median)
+  return cost
 
 
 let input = parseInput("input.txt")
@@ -108,4 +108,20 @@ echo cost(input, med)
 # they spend to align to that position?
 ]#
 
-# TODO
+func tri(n: int): int =
+  return (n * (n+1)).div(2)
+
+
+proc cost2(x: seq[int]): int =
+  var currentLowest = 2^32 # must be a better way
+  for i in x.min .. x.max:
+    var cost = 0
+    for j in x:
+      cost += abs(i - j).tri
+    if cost < currentLowest:
+      currentLowest = cost
+  return currentLowest
+
+
+let testInput = parseInput("input.txt")
+echo cost2(testInput)
