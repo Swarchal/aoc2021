@@ -186,5 +186,80 @@ when isMainModule:
 # four-digit output values. What do you get if you add up all of the output
 # values?
 ]#
+import std/[algorithm, tables, sets]
 
-# TODO
+
+func sort(s: string): string =
+    ## sort the character is a string
+    return s.toSeq().sorted().join()
+
+
+func toSet(s: string): HashSet[char] =
+    for i in s:
+        result.incl(i)
+
+
+func contains[T](x: HashSet[T], y: HashSet[T]): bool =
+    ## surely this is in the stdlib???
+    for i in y:
+        if not (i in x):
+            return false
+    return true
+
+
+proc createMapping(input: seq[string]): Table[string, int] =
+    # get easy ones from input
+    var mappingTable: Table[string, int]
+    var mappingTableRev: Table[int, HashSet[char]]
+    var secondInput: seq[string]
+    for i in input:
+        case i.len:
+            of 2:
+                mappingTable[i.sort] = 1
+                mappingTableRev[1] = i.toSet
+            of 3:
+                mappingTable[i.sort] = 7
+                mappingTableRev[7] = i.toSet
+            of 4:
+                mappingTable[i.sort] = 4
+                mappingTableRev[4] = i.toSet
+            of 7:
+                mappingTable[i.sort] = 8
+                mappingTableRev[8] = i.toSet
+            else:
+                secondInput.add(i.sort)
+    # now the non-easy ones in secondInput
+    for j in secondInput:
+        if j.len == 5:  # 2, 3 or 5
+            if j.toSet.contains(mappingTableRev[7]):
+                # is 3
+                mappingTable[j.sort] = 3
+            elif mappingTableRev[4].intersection(j.toSet()).len == 3:
+                mappingTable[j.sort] = 5
+            else:
+                mappingTable[j.sort] = 2
+        elif j.len == 6:  # 0, 6 or 9
+            if j.toSet.contains(mappingTableRev[4]):
+                mappingTable[j.sort] = 9
+            elif j.toSet.contains(mappingTableRev[7]):
+                mappingTable[j.sort] = 0
+            else:
+                mappingTable[j.sort] = 6
+        else:
+            echo "oh no"
+            continue
+    return mappingTable
+
+
+    return mappingTable
+
+var total = 0
+for entry in parseInput():
+    var mapper = createMapping(entry.input)
+    var digit_str: string
+    for digit in entry.output:
+        digit_str &= $mapper[digit.sort]
+    total += digit_str.parseInt
+
+echo total
+
