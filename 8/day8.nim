@@ -232,7 +232,6 @@ proc createMapping(input: seq[string]): Table[string, int] =
     for j in secondInput:
         if j.len == 5:  # 2, 3 or 5
             if j.toSet.contains(mappingTableRev[7]):
-                # is 3
                 mappingTable[j.sort] = 3
             elif mappingTableRev[4].intersection(j.toSet()).len == 3:
                 mappingTable[j.sort] = 5
@@ -250,8 +249,6 @@ proc createMapping(input: seq[string]): Table[string, int] =
             continue
     return mappingTable
 
-
-    return mappingTable
 
 var total = 0
 for entry in parseInput():
