@@ -183,20 +183,17 @@ func getLowCoords(m: Matrix): seq[Coord] =
 
 
 proc calcBasinSize(m: Matrix, p: Coord, points: var HashSet[Coord]): HashSet[Coord] =
-    points.incl(p)
-    for nyidx in @[-1, 0, 1]:
-        for nxidx in @[-1, 0, 1]:
-            if nyidx.abs != nxidx.abs:
-                var nextPoint: Coord = [p[0]+nyidx, p[1]+nxidx]
-                if nextPoint in points:
-                    continue
-                try:
-                    if m[nextPoint[0]][nextPoint[1]] == 9:
-                        continue
-                except IndexError:
-                    continue
-                discard calcBasinSize(m, nextPoint, points)
-    return points
+  points.incl(p)
+  for nyidx in @[-1, 0, 1]:
+    for nxidx in @[-1, 0, 1]:
+      if nyidx.abs != nxidx.abs:
+        var nextPoint: Coord = [p[0]+nyidx, p[1]+nxidx]
+        if nextPoint in points: continue
+        try:
+          if m[nextPoint[0]][nextPoint[1]] == 9: continue
+        except IndexError: continue
+        discard calcBasinSize(m, nextPoint, points)
+  return points
 
 
 let m = readMatrix("input.txt")
@@ -206,10 +203,9 @@ let lowCoords = m.getLowCoords()
 var basinSizes: seq[int]
 
 for c in lowCoords:
-    echo c
-    var points: HashSet[Coord]
-    let basin = calcBasinSize(m, c, points)
-    basinSizes.add(basin.len)
+  var points: HashSet[Coord]
+  let basin = calcBasinSize(m, c, points)
+  basinSizes.add(basin.len)
 
 basinSizes.sort()
 echo basinSizes[^3..basinSizes.high].foldl(a * b)
