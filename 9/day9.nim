@@ -149,3 +149,67 @@ echo readMatrix("input.txt").getLowVals().riskLevel()
 # What do you get if you multiply together the sizes of the three largest
 # basins?
 ]#
+
+import std/[sets, hashes, algorithm]
+
+
+type Coord = array[2, int]
+
+
+func hash(c: Coord): Hash =
+    var h: Hash = 0
+    h = h !& hash(c[0])
+    h = h !& hash(c[1])
+    return !$h
+
+
+func getLowCoords(m: Matrix): seq[Coord] =
+  ## get low point co-ordinates
+  let mPadded = m.pad()
+  let nRows = mPadded.high
+  let nCols = mPadded[0].high
+  # iterate through inner matrix, ignore padding indices
+  for yidx in 1..nRows-1:
+    for xidx in 1..nCols-1:
+      var point = mPadded[yidx][xidx]
+      # get neighbouring vals of point
+      var neighbours: seq[int]
+      for nyidx in @[-1, 0, 1]:
+        for nxidx in @[-1, 0, 1]:
+          if nyidx.abs != nxidx.abs:
+            neighbours.add(mPadded[yidx+nyidx][xidx+nxidx])
+      if point.lowerThanAll(neighbours):
+        result.add([yidx-1, xidx-1])
+
+
+proc calcBasinSize(m: Matrix, p: Coord, points: var HashSet[Coord]): HashSet[Coord] =
+    points.incl(p)
+    for nyidx in @[-1, 0, 1]:
+        for nxidx in @[-1, 0, 1]:
+            if nyidx.abs != nxidx.abs:
+                var nextPoint: Coord = [p[0]+nyidx, p[1]+nxidx]
+                if nextPoint in points:
+                    continue
+                try:
+                    if m[nextPoint[0]][nextPoint[1]] == 9:
+                        continue
+                except IndexError:
+                    continue
+                discard calcBasinSize(m, nextPoint, points)
+    return points
+
+
+let m = readMatrix("input.txt")
+let lowCoords = m.getLowCoords()
+
+
+var basinSizes: seq[int]
+
+for c in lowCoords:
+    echo c
+    var points: HashSet[Coord]
+    let basin = calcBasinSize(m, c, points)
+    basinSizes.add(basin.len)
+
+basinSizes.sort()
+echo basinSizes[^3..basinSizes.high].foldl(a * b)
